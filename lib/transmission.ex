@@ -1,5 +1,7 @@
 defmodule Transmission do
-  defstruct [:tesla, :url, :username, :password, :token]
+  defstruct [:tesla, :url, :username, :password]
+
+  alias Transmission.Client
 
   @middleware [
     {Tesla.Middleware.JSON, engine: Poison, engine_opts: [keys: :atoms]},
@@ -19,5 +21,9 @@ defmodule Transmission do
       username: username,
       password: password
     }
+  end
+
+  def get_torrents(client) do
+    Client.get_torrents(client)
   end
 end
