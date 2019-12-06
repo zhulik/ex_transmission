@@ -1,26 +1,5 @@
 defmodule Transmission.Client do
-  defstruct [:tesla, :url, :username, :password, :token]
   use Tesla
-
-  @middleware [
-    {Tesla.Middleware.JSON, engine: Poison, engine_opts: [keys: :atoms]},
-    Tesla.Middleware.Logger,
-    {Tesla.Middleware.Timeout, timeout: 30_000}
-  ]
-
-  def new(url, username, password) do
-    middleware =
-      [
-        {Tesla.Middleware.BaseUrl, url}
-      ] ++ @middleware
-
-    %__MODULE__{
-      tesla: Tesla.client(middleware),
-      url: url,
-      username: username,
-      password: password
-    }
-  end
 
   def auth_token(client) do
     case Tesla.post(client.tesla, "/", %{},
