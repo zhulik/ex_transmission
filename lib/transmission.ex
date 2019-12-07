@@ -2,6 +2,7 @@ defmodule Transmission do
   use GenServer
 
   alias Transmission.Api
+  alias Transmission.TorrentAdd
   alias Transmission.TorrentGet
   alias Transmission.TorrentReannounce
   alias Transmission.TorrentStart
@@ -37,6 +38,10 @@ defmodule Transmission do
     GenServer.call(transmission, {:reannounce_torrents, ids})
   end
 
+  def add_torrent(transmission, options) do
+    GenServer.call(transmission, {:add_torrent, options})
+  end
+
   @impl true
   def init({url, username, password}) do
     {:ok,
@@ -44,6 +49,14 @@ defmodule Transmission do
        tesla: Api.new(url, username, password),
        token: nil
      }}
+  end
+
+  @impl true
+  def handle_call({:add_torrent, options}, _from, state) do
+    {token, %{arguments: %{"torrent-added": %{id: id}}, result: "success"}} =
+      Api.execute_method(state.tesla, state.token, TorrentAdd.method(options))
+
+    {:reply, id, %{state | token: token}}
   end
 
   @impl true
