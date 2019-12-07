@@ -29,10 +29,18 @@ defmodule Transmission.TorrentGet do
       arguments:
         %{
           fields: @get_torrents_fields,
-          ids: ids
+          ids: cast_ids(ids)
         }
         |> compact()
     }
+  end
+
+  defp cast_ids(ids) when is_nil(ids) or is_list(ids) do
+    ids
+  end
+
+  defp cast_ids(ids) do
+    [ids]
   end
 
   defp compact(map) do

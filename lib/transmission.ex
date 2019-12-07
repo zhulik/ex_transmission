@@ -14,8 +14,8 @@ defmodule Transmission do
     GenServer.start_link(__MODULE__, {url, username, password})
   end
 
-  def get_torrents(transmission) do
-    GenServer.call(transmission, :get_torrents)
+  def get_torrents(transmission, ids \\ nil) do
+    GenServer.call(transmission, {:get_torrents, ids})
   end
 
   @impl true
@@ -34,9 +34,9 @@ defmodule Transmission do
   end
 
   @impl true
-  def handle_call(:get_torrents, _from, state) do
+  def handle_call({:get_torrents, ids}, _from, state) do
     {token, %{arguments: %{torrents: torrents}, result: "success"}} =
-      execute_method(state.tesla, state.token, TorrentGet.method())
+      execute_method(state.tesla, state.token, TorrentGet.method(ids))
 
     {:reply, torrents, %{state | token: token}}
   end
