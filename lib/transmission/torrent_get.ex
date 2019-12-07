@@ -1,4 +1,6 @@
 defmodule Transmission.TorrentGet do
+  alias Transmission.Utils
+
   @get_torrents_fields [
     "id",
     "name",
@@ -29,21 +31,9 @@ defmodule Transmission.TorrentGet do
       arguments:
         %{
           fields: @get_torrents_fields,
-          ids: cast_ids(ids)
+          ids: Utils.cast_ids(ids)
         }
-        |> compact()
+        |> Utils.compact()
     }
-  end
-
-  defp cast_ids(ids) when is_nil(ids) or is_list(ids) do
-    ids
-  end
-
-  defp cast_ids(ids) do
-    [ids]
-  end
-
-  defp compact(map) do
-    :maps.filter(fn _k, v -> !is_nil(v) end, map)
   end
 end

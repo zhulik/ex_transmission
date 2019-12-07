@@ -3,6 +3,8 @@ defmodule Transmission do
 
   alias Tesla.Middleware
   alias Transmission.TorrentGet
+  alias Transmission.TorrentStart
+  alias Transmission.TorrentStop
 
   @middlewares [
     {Middleware.JSON, engine: Poison, engine_opts: [keys: :atoms]},
@@ -16,6 +18,14 @@ defmodule Transmission do
 
   def get_torrents(transmission, ids \\ nil) do
     GenServer.call(transmission, {:get_torrents, ids})
+  end
+
+  def stop_torrents(transmission, ids \\ nil) do
+    GenServer.call(transmission, {:stop_torrents, ids})
+  end
+
+  def start_torrents(transmission, ids \\ nil) do
+    GenServer.call(transmission, {:start_torrents, ids})
   end
 
   @impl true
@@ -39,6 +49,22 @@ defmodule Transmission do
       execute_method(state.tesla, state.token, TorrentGet.method(ids))
 
     {:reply, torrents, %{state | token: token}}
+  end
+
+  @impl true
+  def handle_call({:stop_torrents, ids}, _from, state) do
+    {token, %{result: "success"}} =
+      execute_method(state.tesla, state.token, TorrentStop.method(ids))
+
+    {:reply, nil, %{state | token: token}}
+  end
+
+  @impl true
+  def handle_call({:start_torrents, ids}, _from, state) do
+    {token, %{result: "success"}} =
+      execute_method(state.tesla, state.token, TorrentStart.method(ids))
+
+    {:reply, nil, %{state | token: token}}
   end
 
   defp execute_method(tesla, token, method) do
