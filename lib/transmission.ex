@@ -4,7 +4,9 @@ defmodule Transmission do
   alias Tesla.Middleware
   alias Transmission.TorrentGet
   alias Transmission.TorrentStart
+  alias Transmission.TorrentStartNow
   alias Transmission.TorrentStop
+  alias Transmission.TorrentVerify
 
   @middlewares [
     {Middleware.JSON, engine: Poison, engine_opts: [keys: :atoms]},
@@ -26,6 +28,14 @@ defmodule Transmission do
 
   def start_torrents(transmission, ids \\ nil) do
     GenServer.call(transmission, {:start_torrents, ids})
+  end
+
+  def start_now_torrents(transmission, ids \\ nil) do
+    GenServer.call(transmission, {:start_now_torrents, ids})
+  end
+
+  def verify_torrents(transmission, ids \\ nil) do
+    GenServer.call(transmission, {:verify_torrents, ids})
   end
 
   @impl true
@@ -63,6 +73,22 @@ defmodule Transmission do
   def handle_call({:start_torrents, ids}, _from, state) do
     {token, %{result: "success"}} =
       execute_method(state.tesla, state.token, TorrentStart.method(ids))
+
+    {:reply, nil, %{state | token: token}}
+  end
+
+  @impl true
+  def handle_call({:start_now_torrents, ids}, _from, state) do
+    {token, %{result: "success"}} =
+      execute_method(state.tesla, state.token, TorrentStartNow.method(ids))
+
+    {:reply, nil, %{state | token: token}}
+  end
+
+  @impl true
+  def handle_call({:verify_torrents, ids}, _from, state) do
+    {token, %{result: "success"}} =
+      execute_method(state.tesla, state.token, TorrentVerify.method(ids))
 
     {:reply, nil, %{state | token: token}}
   end
