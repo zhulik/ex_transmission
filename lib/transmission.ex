@@ -1,34 +1,12 @@
 defmodule Transmission do
   use GenServer
 
+  alias Transmission.TorrentGet
+
   @middleware [
     {Tesla.Middleware.JSON, engine: Poison, engine_opts: [keys: :atoms]},
     Tesla.Middleware.Logger,
     {Tesla.Middleware.Timeout, timeout: 30_000}
-  ]
-
-  @get_torrents_fields [
-    "id",
-    "name",
-    "status",
-    "addedDate",
-    "leftUntilDone",
-    "sizeWhenDone",
-    "eta",
-    "uploadRatio",
-    "uploadedEver",
-    "rateDownload",
-    "rateUpload",
-    "downloadDir",
-    "haveValid",
-    "haveUnchecked",
-    "isFinished",
-    "downloadedEver",
-    "percentDone",
-    "seedRatioMode",
-    "error",
-    "errorString",
-    "trackers"
   ]
 
   def start_link(url, username, password) do
@@ -64,12 +42,7 @@ defmodule Transmission do
       Tesla.post(
         state.tesla,
         "/",
-        %{
-          method: "torrent-get",
-          arguments: %{
-            fields: @get_torrents_fields
-          }
-        },
+        TorrentGet.command(),
         headers: [{"X-Transmission-Session-Id", state.token}, auth_header(state)]
       )
 
