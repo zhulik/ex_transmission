@@ -23,13 +23,15 @@ defmodule Transmission.TorrentGet do
     "trackers"
   ]
 
-  def command(ids \\ nil) do
+  def method(ids \\ nil) do
     %{
       method: "torrent-get",
-      arguments: %{
-        fields: @get_torrents_fields,
-        ids: ids
-      } |> compact()
+      arguments:
+        %{
+          fields: @get_torrents_fields,
+          ids: ids
+        }
+        |> compact()
     }
   end
 
