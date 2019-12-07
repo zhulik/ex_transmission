@@ -3,6 +3,7 @@ defmodule Transmission do
 
   alias Tesla.Middleware
   alias Transmission.TorrentGet
+  alias Transmission.TorrentReannounce
   alias Transmission.TorrentStart
   alias Transmission.TorrentStartNow
   alias Transmission.TorrentStop
@@ -36,6 +37,10 @@ defmodule Transmission do
 
   def verify_torrents(transmission, ids \\ nil) do
     GenServer.call(transmission, {:verify_torrents, ids})
+  end
+
+  def reannounce_torrents(transmission, ids \\ nil) do
+    GenServer.call(transmission, {:reannounce_torrents, ids})
   end
 
   @impl true
@@ -89,6 +94,14 @@ defmodule Transmission do
   def handle_call({:verify_torrents, ids}, _from, state) do
     {token, %{result: "success"}} =
       execute_method(state.tesla, state.token, TorrentVerify.method(ids))
+
+    {:reply, nil, %{state | token: token}}
+  end
+
+  @impl true
+  def handle_call({:reannounce_torrents, ids}, _from, state) do
+    {token, %{result: "success"}} =
+      execute_method(state.tesla, state.token, TorrentReannounce.method(ids))
 
     {:reply, nil, %{state | token: token}}
   end
