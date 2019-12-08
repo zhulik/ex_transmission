@@ -23,7 +23,8 @@ defmodule Transmission.MixProject do
     [
       {:tesla, "~> 1.3"},
       {:poison, "~> 4.0"},
-      {:credo, "~> 1.1.5", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.1.5", only: [:dev, :test], runtime: false},
+      {:exactor, "~> 2.2.4", warn_missing: false}
     ]
   end
 end
