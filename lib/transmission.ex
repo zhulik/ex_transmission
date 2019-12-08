@@ -61,8 +61,11 @@ defmodule Transmission do
   end
 
   defcall add_torrent(options), state: state do
-    {token, %{arguments: %{"torrent-added": %{id: id}}, result: "success"}} =
-      Api.execute_method(state.tesla, state.token, TorrentAdd.method(options))
+    {token, id} =
+      case Api.execute_method(state.tesla, state.token, TorrentAdd.method(options)) do
+        {token, %{arguments: %{"torrent-added": %{id: id}}, result: "success"}} -> {token, id}
+        {token, %{arguments: %{"torrent-duplicate": %{id: id}}, result: "success"}} -> {token, id}
+      end
 
     set_and_reply(%{state | token: token}, id)
   end
