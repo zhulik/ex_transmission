@@ -5,6 +5,7 @@ defmodule Transmission do
   alias Transmission.TorrentAdd
   alias Transmission.TorrentGet
   alias Transmission.TorrentReannounce
+  alias Transmission.TorrentRemove
   alias Transmission.TorrentStart
   alias Transmission.TorrentStartNow
   alias Transmission.TorrentStop
@@ -64,5 +65,12 @@ defmodule Transmission do
       Api.execute_method(state.tesla, state.token, TorrentAdd.method(options))
 
     set_and_reply(%{state | token: token}, id)
+  end
+
+  defcall remove_torrent(ids, delete_local_data \\ false), state: state do
+    {token, %{result: "success"}} =
+      Api.execute_method(state.tesla, state.token, TorrentRemove.method(ids, delete_local_data))
+
+    set_and_reply(%{state | token: token}, nil)
   end
 end
