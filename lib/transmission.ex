@@ -19,43 +19,38 @@ defmodule Transmission do
   end
 
   defcall get_torrents(ids \\ nil), state: state do
-    {token, %{arguments: %{torrents: torrents}, result: "success"}} =
+    {token, %{torrents: torrents}} =
       Api.execute_method(state.tesla, state.token, TorrentGet.method(ids))
 
     set_and_reply(%{state | token: token}, torrents)
   end
 
   defcall stop_torrents(ids \\ nil), state: state do
-    {token, %{result: "success"}} =
-      Api.execute_method(state.tesla, state.token, TorrentStop.method(ids))
+    {token, %{}} = Api.execute_method(state.tesla, state.token, TorrentStop.method(ids))
 
     set_and_reply(%{state | token: token}, nil)
   end
 
   defcall start_torrents(ids \\ nil), state: state do
-    {token, %{result: "success"}} =
-      Api.execute_method(state.tesla, state.token, TorrentStart.method(ids))
+    {token, %{}} = Api.execute_method(state.tesla, state.token, TorrentStart.method(ids))
 
     set_and_reply(%{state | token: token}, nil)
   end
 
   defcall start_now_torrents(ids \\ nil), state: state do
-    {token, %{result: "success"}} =
-      Api.execute_method(state.tesla, state.token, TorrentStartNow.method(ids))
+    {token, %{}} = Api.execute_method(state.tesla, state.token, TorrentStartNow.method(ids))
 
     set_and_reply(%{state | token: token}, nil)
   end
 
   defcall verify_torrents(ids \\ nil), state: state do
-    {token, %{result: "success"}} =
-      Api.execute_method(state.tesla, state.token, TorrentVerify.method(ids))
+    {token, %{}} = Api.execute_method(state.tesla, state.token, TorrentVerify.method(ids))
 
     set_and_reply(%{state | token: token}, nil)
   end
 
   defcall reannounce_torrents(ids \\ nil), state: state do
-    {token, %{result: "success"}} =
-      Api.execute_method(state.tesla, state.token, TorrentReannounce.method(ids))
+    {token, %{}} = Api.execute_method(state.tesla, state.token, TorrentReannounce.method(ids))
 
     set_and_reply(%{state | token: token}, nil)
   end
@@ -63,15 +58,15 @@ defmodule Transmission do
   defcall add_torrent(options), state: state do
     {token, id} =
       case Api.execute_method(state.tesla, state.token, TorrentAdd.method(options)) do
-        {token, %{arguments: %{"torrent-added": %{id: id}}, result: "success"}} -> {token, id}
-        {token, %{arguments: %{"torrent-duplicate": %{id: id}}, result: "success"}} -> {token, id}
+        {token, %{"torrent-added": %{id: id}}} -> {token, id}
+        {token, %{"torrent-duplicate": %{id: id}}} -> {token, id}
       end
 
     set_and_reply(%{state | token: token}, id)
   end
 
   defcall remove_torrent(ids, delete_local_data \\ false), state: state do
-    {token, %{result: "success"}} =
+    {token, %{}} =
       Api.execute_method(state.tesla, state.token, TorrentRemove.method(ids, delete_local_data))
 
     set_and_reply(%{state | token: token}, nil)

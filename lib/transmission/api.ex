@@ -24,8 +24,8 @@ defmodule Transmission.Api do
            method,
            headers: [{"X-Transmission-Session-Id", token || ""}]
          ) do
-      {:ok, %Tesla.Env{status: 200, body: body}} ->
-        {token, body}
+      {:ok, %Tesla.Env{status: 200, body: %{result: "success", arguments: arguments}}} ->
+        {token, arguments}
 
       {:ok, %Tesla.Env{status: 409}} ->
         {:ok, token} = auth_token(api)
